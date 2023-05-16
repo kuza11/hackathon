@@ -2,18 +2,30 @@ const mysql = require('mysql2');
 const mqtt = require('mqtt');
 
 // Database Setup
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    port: 3306,
-    password: 'ZlabSuckDick',
-    database: 'hackathon'
-});
+export default async function handler(req, res) {
 
-db.connect((err) => {
-  if (err) throw err;
-  console.log('Connected to the database');
-});
+ 
+
+    const connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: "hackathon",
+    port: 3306
+    });
+    
+     
+    
+    connection.connect(error => {
+      if (error) {
+        console.error('An error occurred while connecting to the DB: ' + error.stack);
+        return;
+      }
+    
+     
+    
+      console.log('Connected as id ' + connection.threadId);
+    });
 
 // MQTT Setup
 const options = {

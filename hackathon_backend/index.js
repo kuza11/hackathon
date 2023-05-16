@@ -10,65 +10,60 @@ const db = mysql.createConnection({
     database: 'hackathon'
 });
 
-
 db.connect(error => {
     if (error) {
-    console.error('An error occurred while connecting to the DB: ' + error.stack);
-    return;
+        console.error('An error occurred while connecting to the DB: ' + error.stack);
+        return;
     }
     console.log('Connected as id ' + db.threadId);
-    });
+});
+
 // MQTT Setup
 const options = {
     username: 'pi',
     password: 'senzor12345'
-  };
+};
 
-const client  = mqtt.connect('mqtt://192.168.103.219',options);
+const client = mqtt.connect('mqtt://192.168.103.219', options);
+
 client.on('connect', () => {
     console.log('Connected to MQTT broker');
     client.subscribe('senzor/console/log', (err) => {
-    if (err) throw err;
+        if (err) throw err;
+        console.log('Subscribed to senzor/console/log');
     });
     client.subscribe('message', (err) => {
         if (err) throw err;
+        console.log('Subscribed to message');
     });
 });
 
-client.on('device', (topic, message) => {
-  // message is a Buffer
-  console.log(`Received message on ${topic}: ${message.toString()}`);
-  
-  const msgObj = JSON.parse(message.toString());
-  const mac = msgObj.mac;
-  const angle = msgObj.angle;
-
-  // Save the message to the database
-  const query = "INSERT INTO devices (mac, angle) VALUES (?, ?)";
-  db.query(query, [mac, angle], (err, result) => {
-    if (err) console.log('Message could not be saved in the database');
-    console.log('Message saved to the database');
-  });
+client.on('message', (topic, message) => {
+    console.log('Received message on topic:', topic);
+    console.log('Message:', message.toString());
 });
 
 client.on('senzor/console/log', (topic, message) => {
-    console.log("someone called me");
-    
+    console.log('Received message on senzor/console/log');
+    console.log('Message:', message.toString());
+
     const msgObj = JSON.parse(message.toString());
     const device = msgObj.device;
     const timestamp = msgObj.timestamp;
     const sensorTop = msgObj.sensor_top;
     const sensorBottom = msgObj.sensor_bottom;
     const angle = msgObj.angle;
-  
+
     // Save the message to the database
     const query = "INSERT INTO devices (device, timestamp, sensor_top, sensor_bottom, angle) VALUES (?, ?, ?, ?, ?)";
     db.query(query, [device, timestamp, sensorTop, sensorBottom, angle], (err, result) => {
-      if (err) console.log('Message could not be saved in the database');
-      console.log('Message saved to the database');
+        if (err) {
+            console.log('Message could not be saved in the database');
+        } else {
+            console.log('Message saved to the database');
+        }
     });
-  });
-
+});
 
 const data = {
     device: 'mekac adresa',
@@ -76,6 +71,6 @@ const data = {
     sensor_top: 420,
     sensor_bottom: 69,
     angle: 20.69,
-  };
-  
-  client.publish('senzor/console/log', JSON.stringify(data));
+};
+
+client.publish('senzor/console/log', JSON.stringify(data));

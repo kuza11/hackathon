@@ -23,12 +23,6 @@ const options = {
 
 const client  = mqtt.connect('mqtt://localhost:1883',options);
 
-//let mySession = await mysqlx.getSession( {
-//     host: config.host, port: config.port,
-//     user: config.username, password: config.password
-//     });
-//     let sqlRes = (await mySession.sql("select * from hackathon.data").execute()).fetchAll();
-
 client.on('connect', () => {
   console.log('Connected to MQTT broker');
   client.subscribe('message', (err) => {
@@ -40,14 +34,23 @@ client.on('message', (topic, message) => {
   // message is a Buffer
   console.log(`Received message on ${topic}: ${message.toString()}`);
   
+  const msgObj = JSON.parse(message.toString());
+  const mac = msgObj.mac;
+  const angle = msgObj.angle;
+
   // Save the message to the database
-  const query = "INSERT INTO devices (mac, angle) VALUES ('00:1B:44:11:3A:B7', 128.55)";
-  db.query(query, [message.toString()], (err, result) => {
+  const query = "INSERT INTO devices (mac, angle) VALUES (?, ?)";
+  db.query(query, [mac, angle], (err, result) => {
     if (err) throw err;
     console.log('Message saved to the database');
   });
 });
 //test message
 client.on('connect', () => {
-    client.publish('message', 'Test message');
-  });
+    const data = {
+        mac: "00:1B:44:99:99:99",
+        angle: 45.85
+    };
+
+    client.publish('message', JSON.stringify(data));
+});

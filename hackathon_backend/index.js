@@ -45,7 +45,8 @@ client.on('connect', () => {
             timestamp: 5651,
             sensor_top: 564,
             sensor_bottom: 56468,
-            angle: 22.15
+            angle: 22.15,
+            temperature: 21.25
         });
         client.publish(topic, message, (err) => {
             if (err) {
@@ -70,10 +71,11 @@ client.on('message', (topic, message) => {
         const sensorTop = msgObj.sensor_top;
         const sensorBottom = msgObj.sensor_bottom;
         const angle = msgObj.angle;
+        const temperature = msgObj.temperature;
   
         // Save the message to the database
-        const query = "INSERT INTO data (time, mac, sens_top, sens_bottom) VALUES (?, ?, ?, ?)";
-        db.query(query, [timestamp, device, sensorTop, sensorBottom], (err, result) => {
+        const query = "INSERT INTO data (time, mac, sens_top, sens_bottom, temperature) VALUES (?, ?, ?, ?, ?)";
+        db.query(query, [timestamp, device, sensorTop, sensorBottom, temperature], (err, result) => {
             if (err) {
                 console.log('Log could not be saved in the database');
             } else {

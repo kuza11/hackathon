@@ -32,8 +32,16 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
     print("Received message: %s" % msg.payload.decode())
-    sql = "INSERT INTO your_table (column_name) VALUES (%s)"  # adjust to fit your table structure
-    val = (msg.payload.decode(),)
+    msg_obj = json.loads(msg.payload.decode())
+    device = msg_obj.get('device')
+    timestamp = msg_obj.get('timestamp')
+    sensor_top = msg_obj.get('sensor_top')
+    sensor_bottom = msg_obj.get('sensor_bottom')
+    angle = msg_obj.get('angle')  # This doesn't seem to be used in your JS code
+    temperature = msg_obj.get('temperature')
+
+    sql = "INSERT INTO data (time, mac, sens_top, sens_bottom, temperature) VALUES (%s, %s, %s, %s, %s)"
+    val = (timestamp, device, sensor_top, sensor_bottom, temperature)
     mycursor.execute(sql, val)
     mydb.commit()
     print(mycursor.rowcount, "record inserted.")

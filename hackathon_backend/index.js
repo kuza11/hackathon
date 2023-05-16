@@ -25,7 +25,7 @@ const options = {
   };
 
 const client  = mqtt.connect('mqtt://192.168.103.219:1884',options);
-
+console.log("still going");
 client.on('connect', () => {
   console.log('Connected to MQTT broker');
   client.subscribe('message', (err) => {

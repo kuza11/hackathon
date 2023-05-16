@@ -46,6 +46,7 @@ client.on('message', (topic, message) => {
 client.on('senzor/console/log', (topic, message) => {
     console.log('Received message on senzor/console/log');
     console.log('Message:', message.toString());
+    try{
 
     const msgObj = JSON.parse(message.toString());
     const device = msgObj.device;
@@ -63,4 +64,8 @@ client.on('senzor/console/log', (topic, message) => {
             console.log('Message saved to the database');
         }
     });
+    }
+     catch{
+        console.log('Message on senzor/console/log is in bad format');
+     }
 });

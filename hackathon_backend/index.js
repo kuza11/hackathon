@@ -3,10 +3,11 @@ const mqtt = require('mqtt');
 
 // Database Setup
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'your_password',
-  database: 'your_database'
+    host: 'localhost',
+    user: 'root',
+    port: 3000,
+    password: 'ZlabSuckDick',
+    database: 'hackathon'
 });
 
 db.connect((err) => {
@@ -15,11 +16,17 @@ db.connect((err) => {
 });
 
 // MQTT Setup
-const client  = mqtt.connect('mqtt://mqtt_broker_url');
+const client  = mqtt.connect('mqtt://localhost:3306');
+
+//let mySession = await mysqlx.getSession( {
+//     host: config.host, port: config.port,
+//     user: config.username, password: config.password
+//     });
+//     let sqlRes = (await mySession.sql("select * from hackathon.data").execute()).fetchAll();
 
 client.on('connect', () => {
   console.log('Connected to MQTT broker');
-  client.subscribe('your_topic', (err) => {
+  client.subscribe('message', (err) => {
     if (err) throw err;
   });
 });
@@ -29,7 +36,7 @@ client.on('message', (topic, message) => {
   console.log(`Received message on ${topic}: ${message.toString()}`);
   
   // Save the message to the database
-  const query = 'INSERT INTO your_table (message) VALUES (?)';
+  const query = 'INSERT INTO angle (mac, angle) VALUES (00:1B:44:11:3A:B7, 128.55)';
   db.query(query, [message.toString()], (err, result) => {
     if (err) throw err;
     console.log('Message saved to the database');

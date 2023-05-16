@@ -3,7 +3,7 @@ const mqtt = require('mqtt');
 
 // Database Setup
 const db = mysql.createConnection({
-    host: '192.168.103.219',
+    host: 'localhost',
     user: 'root',
     port: 3306,
     password: 'ZlabSuckDick',

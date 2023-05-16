@@ -24,7 +24,7 @@ connection.connect(error => {
 });
 
 // Query the database
-connection.query('SELECT * FROM your_table', function (error, results, fields) {
+connection.query('SELECT * FROM data', function (error, results, fields) {
   if (error) throw error;
   // Log the results
   console.log(results);

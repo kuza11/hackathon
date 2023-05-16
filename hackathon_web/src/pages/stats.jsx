@@ -26,10 +26,15 @@ export default function Stats(/*{ stats }*/) {
         <LineChart data={stats}>
           <XAxis dataKey="number" />
           <YAxis />
-          <Line type="monotone" dataKey="time" stroke="#FB8833" />
+          <Line type="monotone" dataKey="time" stroke="#ff0000" />
           <Tooltip />
         </LineChart>
       </ResponsiveContainer>
+      <div>
+        <Panel name="Money lost total" value="10000" unit="Kč" />
+        <Panel name="Money lost today" value="1239" unit="Kč" />
+        <Panel name="Money lost from last cleaning" value="2349" unit="Kč" />
+      </div>
       <button
         className="rounded-lg border-2 border-slate-400 bg-transparent px-1"
         onClick={() => router.push("/admin")}
@@ -37,6 +42,17 @@ export default function Stats(/*{ stats }*/) {
         See the logs
       </button>
     </main>
+  );
+}
+
+function Panel({ name, value, unit }) {
+  return (
+    <div>
+      <p className="text-xs">{name}:</p>
+      <p className="w-64 rounded-lg border-2 border-slate-400 px-1 text-slate-800">
+        {value} {unit}
+      </p>
+    </div>
   );
 }
 

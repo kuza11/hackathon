@@ -41,12 +41,35 @@ client.on('connect', () => {
 client.on('message', (topic, message) => {
     console.log('Received message on topic:', topic);
     console.log('Message:', message.toString());
-});
+    
+    if (topic === 'senzor/console/log') {
+      try {
+        const msgObj = JSON.parse(message.toString());
+        const device = msgObj.device;
+        const timestamp = msgObj.timestamp;
+        const sensorTop = msgObj.sensor_top;
+        const sensorBottom = msgObj.sensor_bottom;
+        const angle = msgObj.angle;
+  
+        // Save the message to the database
+        const query = "INSERT INTO devices (device, timestamp, sensor_top, sensor_bottom, angle) VALUES (?, ?, ?, ?, ?)";
+        db.query(query, [device, timestamp, sensorTop, sensorBottom, angle], (err, result) => {
+          if (err) {
+            console.log('Message could not be saved in the database');
+          } else {
+            console.log('Message saved to the database');
+          }
+        });
+      } catch (error) {
+        console.log('Error parsing JSON message:', error.message);
+      }
+    }
+  });
+  
 
 client.on('senzor/console/log', (topic, message) => {
     console.log('Received message on senzor/console/log');
     console.log('Message:', message.toString());
-    try{
 
     const msgObj = JSON.parse(message.toString());
     const device = msgObj.device;
@@ -64,8 +87,4 @@ client.on('senzor/console/log', (topic, message) => {
             console.log('Message saved to the database');
         }
     });
-    }
-     catch{
-        console.log('Message on senzor/console/log is in bad format');
-     }
 });

@@ -75,7 +75,7 @@ client.on('message', (topic, message) => {
         const query = "INSERT INTO devices (device, timestamp, sensor_top, sensor_bottom, angle) VALUES (?, ?, ?, ?, ?)";
         db.query(query, [device, timestamp, sensorTop, sensorBottom, angle], (err, result) => {
           if (err) {
-            console.log('Message could not be saved in the database');
+            console.log('Message could not be saved in the databaseeeee');
           } else {
             console.log('Message saved to the database');
           }
@@ -102,9 +102,7 @@ client.on('senzor/console/log', (topic, message) => {
     const query = "INSERT INTO data (time, mac, sens_top, sens_bottom) VALUES (?, ?, ?, ?)";
     db.query(query, [timestamp, device, sensorTop, sensorBottom], (err, result) => {
         if (err) {
-            console.error('Error saving message to the database:', err);
             console.log('Message could not be saved in the database');
-            console.log('Error message:', err.message);
         } else {
             console.log('Message saved to the database');
         }

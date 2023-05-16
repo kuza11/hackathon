@@ -1,21 +1,35 @@
 import { useRouter } from "next/router";
+import Graph_css from "../styles/Graph.module.css";
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from "recharts";
 
 export default function Stats(/*{ stats }*/) {
   let router = useRouter();
 
   let stats = [
-    { value: "9080", name: "Price", unit: "$" },
-    { value: "10", name: "Time to evaluation", unit: "days" },
-    { value: "1000", name: "Power per year", unit: "W/year" },
-    { value: "800", name: "Income per month", unit: "$" },
-    { value: "5", name: "Number of panels", unit: "panels" },
+    { number: 0, time: Math.random() },
+    { number: 1, time: Math.random() },
+    { number: 2, time: Math.random() },
+    { number: 3, time: Math.random() },
   ];
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-24 gap-8 text-2xl">
-      {stats.map((e) => (
-        <Panel key={e.name} e={e} />
-      ))}
+    <main className="flex min-h-screen flex-col items-center p-24 text-2xl">
+      <h1>Effectivity of panels over time</h1>
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={stats}>
+          <XAxis dataKey="number" />
+          <YAxis />
+          <Line type="monotone" dataKey="time" stroke="#FB8833" />
+          <Tooltip />
+        </LineChart>
+      </ResponsiveContainer>
       <button
         className="rounded-lg border-2 border-slate-400 bg-transparent px-1"
         onClick={() => router.push("/admin")}
@@ -26,13 +40,48 @@ export default function Stats(/*{ stats }*/) {
   );
 }
 
-function Panel({ e: { name, value, unit } }) {
+function Graph({ name, unit1, unit2, stats, height, setNumPanels }) {
+  const router = useRouter();
+  const threshhold = 0.25;
+
+  let max = stats.reduce((maxTime, current) => {
+    return current.time > maxTime ? current.time : maxTime;
+  }, 0);
+
+  function map(val, inMin, inMax, outMin, outMax) {
+    return ((val - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+  }
+
   return (
-    <div>
-      <p className="text-xs">{name}:</p>
-      <p className="w-64 rounded-lg border-2 border-slate-400 px-1 text-slate-800">
-        {value} {unit}
-      </p>
-    </div>
+    <>
+      <p>{name}</p>
+      <div className={`w-full ${Graph_css.graphContainer}`}>
+        <p className={`text-xs ${Graph_css.unit1}`}>{unit1}</p>
+        <p className={`text-xs ${Graph_css.unit2}`}>{unit2}</p>
+        <div
+          className={`flex flex-row-reverse items-end gap-1 max-w-full overflow-x-auto border-2 border-slate-400 ${Graph_css.graph}`}
+          style={{ height }}
+        >
+          {stats.map((e) => {
+            let time = map(e.time, 0, max, 0, height);
+            return (
+              <Node
+                key={e.number}
+                color={time > height * (1 - threshhold) ? "green" : "red"}
+                height={time}
+                onClick={() => {
+                  setNumPanels(e.number);
+                  router.push("/stats");
+                }}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </>
   );
+}
+
+function Node({ color, height }) {
+  return <div style={{ height, backgroundColor: color, minWidth: "20px" }} />;
 }

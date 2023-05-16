@@ -1,0 +1,19 @@
+.graphContainer {
+  display: grid;
+  grid-template-areas: "unit1 graph" "unit2 unit2";
+  grid-template-columns: 15px auto;
+}
+
+.unit1 {
+  grid-area: unit1;
+  writing-mode: vertical-lr;
+}
+
+.unit2 {
+  grid-area: unit2;
+  text-align: end;
+}
+
+.graph {
+  grid-area: graph;
+}

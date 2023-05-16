@@ -46,7 +46,7 @@ client.on('connect', () => {
             sensor_top: 564,
             sensor_bottom: 56468,
             angle: 22.15,
-            temperature: 21.25
+            temperature: 13.11,
         });
         client.publish(topic, message, (err) => {
             if (err) {

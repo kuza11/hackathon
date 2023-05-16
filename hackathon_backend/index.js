@@ -16,7 +16,7 @@ db.connect(error => {
     console.error('An error occurred while connecting to the DB: ' + error.stack);
     return;
     }
-    console.log('Connected as id ' + connection.threadId);
+    console.log('Connected as id ' + db.threadId);
     });
 // MQTT Setup
 const options = {

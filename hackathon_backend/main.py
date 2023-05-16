@@ -8,7 +8,7 @@ username = "pi"
 password = "senzor12345"
 
 # MySQL settings
-mysql_host = "192.168.103.219"
+mysql_host = "172.0.0.1"
 mysql_database = "hackathon"
 mysql_user = "root"
 mysql_password = "ZlabSuckDick"

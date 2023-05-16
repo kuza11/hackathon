@@ -16,7 +16,12 @@ db.connect((err) => {
 });
 
 // MQTT Setup
-const client  = mqtt.connect('mqtt://localhost:1883');
+const options = {
+    username: 'pi',
+    password: 'senzor12345'
+  };
+
+const client  = mqtt.connect('mqtt://localhost:1883',options);
 
 //let mySession = await mysqlx.getSession( {
 //     host: config.host, port: config.port,

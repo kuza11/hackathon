@@ -27,7 +27,7 @@ connection.connect(error => {
 connection.query('SELECT * FROM data', function (error, results, fields) {
   if (error) throw error;
   // Log the results
-  console.log(results);
+  res.status(200).json({message: results});
 });
 
 // Close the connection when done

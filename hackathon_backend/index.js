@@ -1,8 +1,8 @@
-var mariadb = require('mariadb');
+const mysql = require('mysql2');
 const mqtt = require('mqtt');
 
 // Database Setup
-const db = mariadb.createConnection({
+const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     port: 3306,
@@ -10,13 +10,10 @@ const db = mariadb.createConnection({
     database: 'hackathon'
 });
 
-db.connect()
-  .then(() => {
-    console.log('Connected to the database');
-  })
-  .catch(err => {
-    throw err;
-  });
+db.connect((err) => {
+  if (err) throw err;
+  console.log('Connected to the database');
+});
 
 // MQTT Setup
 const options = {

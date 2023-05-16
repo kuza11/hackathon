@@ -39,13 +39,15 @@ export default async function handler(req, res) {
   const startDate = '2013-05-16';
   const endDate = '2023-05-16';
 
-  const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${latitude}%2C${longitude}/${startDate}/${endDate}?key=${apiKey}`;
+  const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${latitude},${longitude}/${startDate}/${endDate}?key=${apiKey}&contentType=json`;
+  const url2 = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/London,UK/2020-10-01/2020-12-31?key=${apiKey}`;
 
-  let weather = (await fetch(url));
+
+  let weather = (await fetch(url2));
   
-  console.log(weather.body);
+  console.log(JSON.stringify(weather.status, null, 2));
 
-  //fs.writeFileSync("../../../weather.txt", weather);
+  fs.writeFileSync("../../../weather.txt", JSON.stringify(weather, null, 2));
 
 
 

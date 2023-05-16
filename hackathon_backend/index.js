@@ -64,13 +64,3 @@ client.on('senzor/console/log', (topic, message) => {
         }
     });
 });
-
-const data = {
-    device: 'mekac adresa',
-    timestamp: 12321221212123,
-    sensor_top: 420,
-    sensor_bottom: 69,
-    angle: 20.69,
-};
-
-client.publish('senzor/console/log', JSON.stringify(data));

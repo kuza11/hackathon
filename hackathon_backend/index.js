@@ -99,10 +99,10 @@ client.on('senzor/console/log', (topic, message) => {
     const angle = msgObj.angle;
 
     // Save the message to the database
-    const query = "INSERT INTO data (timestamp, device, sensorTop, sensorBottom) VALUES (?, ?, ?, ?)";
+    const query = "INSERT INTO data (time, mac, sens_top, sens_bottom) VALUES (?, ?, ?, ?)";
     db.query(query, [timestamp, device, sensorTop, sensorBottom], (err, result) => {
         if (err) {
-            console.log('Message could not be saved in the database');
+            console.log('Message could not be saved in the database ', err.message);
         } else {
             console.log('Message saved to the database');
         }

@@ -28,7 +28,7 @@ const client = mqtt.connect('mqtt://192.168.103.219', options);
 
 client.on('connect', () => {
     console.log('Connected to MQTT broker');
-    client.subscribe('senzor/console/log', (err) => {
+    client.subscribe('B8:D6:1A:47:D7:A8/data', (err) => {
         if (err) throw err;
         console.log('Subscribed to senzor/console/log');
     });
@@ -41,12 +41,11 @@ client.on('connect', () => {
         // Publish a message
         const topic = 'senzor/console/log';
         const message = JSON.stringify({
-            device: 'device_tes',
-            timestamp: 5651,
-            sensor_top: 564,
-            sensor_bottom: 56468,
-            angle: 22.15,
-            temperature: 13.11,
+            device: 'your_device',
+            timestamp: 123456789,
+            sensor_top: 420,
+            sensor_bottom: 69,
+            angle: 20.69
         });
         client.publish(topic, message, (err) => {
             if (err) {
@@ -71,11 +70,10 @@ client.on('message', (topic, message) => {
         const sensorTop = msgObj.sensor_top;
         const sensorBottom = msgObj.sensor_bottom;
         const angle = msgObj.angle;
-        const temperature = msgObj.temperature;
   
         // Save the message to the database
-        const query = "INSERT INTO data (time, mac, sens_top, sens_bottom, temperature) VALUES (?, ?, ?, ?, ?)";
-        db.query(query, [timestamp, device, sensorTop, sensorBottom, temperature], (err, result) => {
+        const query = "INSERT INTO data (time, mac, sens_top, sens_bottom) VALUES (?, ?, ?, ?)";
+        db.query(query, [timestamp, device, sensorTop, sensorBottom], (err, result) => {
             if (err) {
                 console.log('Log could not be saved in the database');
             } else {
@@ -101,9 +99,7 @@ client.on('message', (topic, message) => {
       }
     }
 });
-client.on('error', (error) => {
-    console.error('An error occurred:', error.message);
-});
+  
 
 // client.on('senzor/console/log', (topic, message) => {
 //     console.log('Received message on senzor/console/log');

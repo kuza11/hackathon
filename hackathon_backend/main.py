@@ -33,7 +33,5 @@ subscribe_topic("B8:D6:1A:43:88:A8/data")
 
 client.loop_forever()
 
-def subscribe_topic(topic):
-    client.subscribe(topic)
-
-subscribe_topic("senzor/console/log")
+def publish_message(topic, message):
+    client.publish(topic, message)

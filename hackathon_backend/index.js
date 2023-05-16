@@ -36,6 +36,26 @@ client.on('connect', () => {
         if (err) throw err;
         console.log('Subscribed to message');
     });
+
+
+        // Publish a message
+        const topic = 'senzor/console/log';
+        const message = JSON.stringify({
+            device: 'your_device',
+            timestamp: 123456789,
+            sensor_top: 420,
+            sensor_bottom: 69,
+            angle: 20.69
+        });
+        client.publish(topic, message, (err) => {
+            if (err) {
+                console.error('Failed to publish message:', err);
+            } else {
+                console.log('Message published');
+            }
+            // Disconnect the MQTT client
+            client.end();
+        });
 });
 
 client.on('message', (topic, message) => {
@@ -88,3 +108,4 @@ client.on('senzor/console/log', (topic, message) => {
         }
     });
 });
+

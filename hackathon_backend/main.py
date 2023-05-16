@@ -11,7 +11,7 @@ password = "senzor12345"
 mysql_host = "192.168.103.219"
 mysql_database = "hackathon"
 mysql_user = "root"
-mysql_password = "ZlabsuckDick"
+mysql_password = "ZlabSuckDick"
 
 # Connect to MySQL
 mydb = mysql.connector.connect(

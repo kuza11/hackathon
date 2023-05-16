@@ -3,7 +3,7 @@ const mqtt = require('mqtt');
 
 // Database Setup
 const db = mysql.createConnection({
-    host: '127.0.0.1',
+    host: '192.168.103.219',
     user: 'root',
     port: 3306,
     password: 'ZlabSuckDick',
@@ -24,7 +24,7 @@ const options = {
     password: 'senzor12345'
   };
 
-const client  = mqtt.connect('mqtt://localhost:1883',options);
+const client  = mqtt.connect('mqtt://192.168.103.219',options);
 
 client.on('connect', () => {
   console.log('Connected to MQTT broker');
@@ -44,11 +44,7 @@ client.on('message', (topic, message) => {
   // Save the message to the database
   const query = "INSERT INTO devices (mac, angle) VALUES (?, ?)";
   db.query(query, [mac, angle], (err, result) => {
-    if (err)
-    {
-        console.log('Message could not be saved in the database');
-        throw err
-    };
+    if (err) console.log('Message could not be saved in the database');
     console.log('Message saved to the database');
   });
 });
@@ -56,11 +52,11 @@ client.on('message', (topic, message) => {
 
 
 //test message
-client.on('connect', () => {
-    const data = {
-        mac: "00:1B:44:99:99:89",
-        angle: 69.69
-    };
+// client.on('connect', () => {
+//     const data = {
+//         mac: "00:1B:44:99:99:89",
+//         angle: 69.69
+//     };
 
-    client.publish('message', JSON.stringify(data));
-});
+//     client.publish('message', JSON.stringify(data));
+// });

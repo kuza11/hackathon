@@ -99,8 +99,8 @@ client.on('senzor/console/log', (topic, message) => {
     const angle = msgObj.angle;
 
     // Save the message to the database
-    const query = "INSERT INTO devices (device, timestamp, sensor_top, sensor_bottom, angle) VALUES (?, ?, ?, ?, ?)";
-    db.query(query, [device, timestamp, sensorTop, sensorBottom, angle], (err, result) => {
+    const query = "INSERT INTO data (device, timestamp, sensor_top, sensor_bottom, angle) VALUES (?, ?, ?, ?, ?)";
+    db.query(query, [timestamp, device, sensorTop, sensorBottom], (err, result) => {
         if (err) {
             console.log('Message could not be saved in the database');
         } else {
@@ -108,4 +108,3 @@ client.on('senzor/console/log', (topic, message) => {
         }
     });
 });
-

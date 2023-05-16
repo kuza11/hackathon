@@ -43,6 +43,6 @@ client.on('message', (topic, message) => {
   });
 });
 //test message
-testClient.on('connect', () => {
+client.on('connect', () => {
     client.publish('message', 'Test message');
   });

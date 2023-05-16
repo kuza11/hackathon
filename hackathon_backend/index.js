@@ -16,7 +16,7 @@ db.connect((err) => {
 });
 
 // MQTT Setup
-const client  = mqtt.connect('mqtt://localhost:3306');
+const client  = mqtt.connect('mqtt://localhost:1883');
 
 //let mySession = await mysqlx.getSession( {
 //     host: config.host, port: config.port,

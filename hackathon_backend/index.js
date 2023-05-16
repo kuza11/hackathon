@@ -41,11 +41,11 @@ client.on('connect', () => {
         // Publish a message
         const topic = 'senzor/console/log';
         const message = JSON.stringify({
-            device: 'your_device',
-            timestamp: 123456789,
-            sensor_top: 420,
-            sensor_bottom: 69,
-            angle: 20.69
+            device: 'device_tes',
+            timestamp: 5651,
+            sensor_top: 564,
+            sensor_bottom: 56468,
+            angle: 22.15
         });
         client.publish(topic, message, (err) => {
             if (err) {

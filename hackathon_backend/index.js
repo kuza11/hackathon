@@ -1,19 +1,22 @@
-var mysql = require('@mysql/xdevapi');
+var mariadb = require('mariadb');
 const mqtt = require('mqtt');
 
 // Database Setup
-const db = mysql.createConnection({
+const db = mariadb.createConnection({
     host: 'localhost',
     user: 'root',
-    port: 33060,
+    port: 3306,
     password: 'ZlabSuckDick',
     database: 'hackathon'
 });
 
-db.connect((err) => {
-  if (err) throw err;
-  console.log('Connected to the database');
-});
+db.connect()
+  .then(() => {
+    console.log('Connected to the database');
+  })
+  .catch(err => {
+    throw err;
+  });
 
 // MQTT Setup
 const options = {

@@ -1,18 +1,17 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
 
-export default function Home({ stats, setStats }) {
-  const [location, setLocation] = useState({ lon: null, lat: null });
-  const [showGraph, setShowGraph] = useState(false);
+export default function Home({ setStats }) {
+  const [panelInfo, setPanelInfo] = useState({ panel_count: null, power_per_panel: null });
   const router = useRouter();
 
-  async function sendLocation(location) {
+  async function sendPanelInfo(panelInfo) {
     const res = await fetch("/api/graph", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ location: location }),
+      body: JSON.stringify(panelInfo),
     });
 
     return await res.json();
@@ -20,8 +19,8 @@ export default function Home({ stats, setStats }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setStats(await sendLocation(location));
-    setShowGraph(true);
+    // setStats(await sendPanelInfo(panelInfo));
+    router.push("/stats");
   }
 
   return (
@@ -29,68 +28,24 @@ export default function Home({ stats, setStats }) {
       <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
         <input
           className="rounded-lg border-2 border-slate-400 bg-transparent px-1"
-          placeholder="Longitude"
-          onChange={(e) => setLocation({ lon: e.target.value, lat: location.lat })}
-          value={location.lon}
+          placeholder="Number of panels you have"
+          onChange={(e) =>
+            setPanelInfo({ panel_count: e.target.value, power_per_panel: panelInfo.power_per_panel })
+          }
+          value={panelInfo.panel_count}
         />
         <input
           className="rounded-lg border-2 border-slate-400 bg-transparent px-1"
-          placeholder="Latitude"
-          onChange={(e) => setLocation({ lat: e.target.value, lon: location.lon })}
-          value={location.lat}
+          placeholder="Max power per one panel [W]"
+          onChange={(e) =>
+            setPanelInfo({ power_per_panel: e.target.value, panel_count: panelInfo.panel_count })
+          }
+          value={panelInfo.power_per_panel}
         />
         <button className="rounded-lg border-2 border-slate-400 bg-transparent px-1">
           Calculate
         </button>
       </form>
-
-      {showGraph && (
-        <>
-          <Graph stats={stats} height={300} />
-          <input
-            className="rounded-lg border-2 border-slate-400 bg-transparent px-1"
-            placeholder="Pick a number of panels"
-          />
-          <button
-            className="rounded-lg border-2 border-slate-400 bg-transparent px-1"
-            onClick={() => router.push("/stats")}
-          >
-            Show statistics
-          </button>
-        </>
-      )}
     </main>
   );
-}
-
-function Graph({ stats, height }) {
-  let max = stats.reduce((maxTime, current) => {
-    return current.time > maxTime ? current.time : maxTime;
-  }, 0);
-
-  function map(val, inMin, inMax, outMin, outMax) {
-    return ((val - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
-  }
-
-  return (
-    <>
-      <p>Graph</p>
-      <div
-        className="flex items-end gap-1 w-full overflow-x-scroll justify-center border-2 border-slate-400"
-        style={{ height }}
-      >
-        {stats.map((e) => (
-          <Node
-            key={e.number}
-            color={e.worth ? "green" : "red"}
-            height={map(e.time, 0, max, 0, height)}
-          />
-        ))}
-      </div>
-    </>
-  );
-}
-
-function Node({ color, height }) {
-  return <div style={{ height, backgroundColor: color, minWidth: "20px" }} />;
 }

@@ -44,5 +44,5 @@ client.on('message', (topic, message) => {
 });
 //test message
 testClient.on('connect', () => {
-    testClient.publish('message', 'Test message');
+    client.publish('message', 'Test message');
   });

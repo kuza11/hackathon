@@ -75,18 +75,18 @@ client.on('message', (topic, message) => {
         const query = "INSERT INTO data (time, mac, sens_top, sens_bottom) VALUES (?, ?, ?, ?)";
         db.query(query, [timestamp, device, sensorTop, sensorBottom], (err, result) => {
             if (err) {
-                console.log('Message could not be saved in the database');
+                console.log('Log could not be saved in the database');
             } else {
                 //add new device
-                console.log('Message saved to the database');
+                console.log('Log saved to the database');
                 try {
                     // Save the message to the database
                     const query = "INSERT INTO devices (mac, angle) VALUES (?, ?)";
                     db.query(query, [device, angle], (err, result) => {
                         if (err) {
-                           console.log('Message could not be saved in the database');
+                           console.log('Device could not be saved in the database');
                         } else {
-                            console.log('Message saved to the database');
+                            console.log('Device saved to the database');
                         }
                         });
                     } catch (error) {

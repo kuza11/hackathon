@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 
 export default function Home({ stats, setStats }) {
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState({ lon: null, lat: null });
   const [showGraph, setShowGraph] = useState(false);
   const router = useRouter();
 
@@ -26,12 +26,18 @@ export default function Home({ stats, setStats }) {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24 gap-4 text-2xl">
-      <form onSubmit={handleSubmit}>
+      <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
         <input
           className="rounded-lg border-2 border-slate-400 bg-transparent px-1"
-          placeholder="Location"
-          onChange={(e) => setLocation(e.target.value)}
-          value={location}
+          placeholder="Longitude"
+          onChange={(e) => setLocation({ lon: e.target.value, lat: location.lat })}
+          value={location.lon}
+        />
+        <input
+          className="rounded-lg border-2 border-slate-400 bg-transparent px-1"
+          placeholder="Latitude"
+          onChange={(e) => setLocation({ lat: e.target.value, lon: location.lon })}
+          value={location.lat}
         />
         <button className="rounded-lg border-2 border-slate-400 bg-transparent px-1">
           Calculate

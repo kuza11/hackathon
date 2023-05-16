@@ -1,27 +1,30 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const mqtt = require('mqtt');
 
 // Database Setup
 const db = mysql.createConnection({
-    host: 'localhost',
+    host: '192.168.103.219',
     user: 'root',
     port: 3306,
     password: 'ZlabSuckDick',
     database: 'hackathon'
 });
 
-db.connect((err) => {
-  if (err) throw err;
-  console.log('Connected to the database');
-});
 
+db.connect(error => {
+    if (error) {
+    console.error('An error occurred while connecting to the DB: ' + error.stack);
+    return;
+    }
+    console.log('Connected as id ' + db.threadId);
+    });
 // MQTT Setup
 const options = {
     username: 'pi',
     password: 'senzor12345'
   };
 
-const client  = mqtt.connect('mqtt://localhost:1883',options);
+const client  = mqtt.connect('mqtt://192.168.103.219',options);
 
 client.on('connect', () => {
   console.log('Connected to MQTT broker');
@@ -41,16 +44,19 @@ client.on('message', (topic, message) => {
   // Save the message to the database
   const query = "INSERT INTO devices (mac, angle) VALUES (?, ?)";
   db.query(query, [mac, angle], (err, result) => {
-    if (err) throw err;
+    if (err) console.log('Message could not be saved in the database');
     console.log('Message saved to the database');
   });
 });
-//test message
-client.on('connect', () => {
-    const data = {
-        mac: "00:1B:44:99:99:99",
-        angle: 69.69
-    };
 
-    client.publish('message', JSON.stringify(data));
-});
+
+
+//test message
+// client.on('connect', () => {
+//     const data = {
+//         mac: "00:1B:44:99:99:89",
+//         angle: 69.69
+//     };
+
+//     client.publish('message', JSON.stringify(data));
+// });

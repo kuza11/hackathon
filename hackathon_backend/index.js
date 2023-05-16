@@ -101,7 +101,9 @@ client.on('message', (topic, message) => {
       }
     }
 });
-  
+client.on('error', (error) => {
+    console.error('An error occurred:', error.message);
+});
 
 // client.on('senzor/console/log', (topic, message) => {
 //     console.log('Received message on senzor/console/log');

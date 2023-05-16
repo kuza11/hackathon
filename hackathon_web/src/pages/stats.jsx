@@ -1,19 +1,27 @@
 import { useRouter } from "next/router";
 
-export default function Stats({ stats }) {
+export default function Stats(/*{ stats }*/) {
   let router = useRouter();
+
+  let stats = [
+    { value: "9080", name: "Price", unit: "$" },
+    { value: "10", name: "Time to evaluation", unit: "days" },
+    { value: "1000", name: "Power per year", unit: "W/year" },
+    { value: "800", name: "Income per month", unit: "$" },
+    { value: "5", name: "Number of panels", unit: "panels" },
+  ];
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24 gap-8 text-2xl">
       {stats.map((e) => (
-        <Panel key={e.name} name={e.name} value={e.value} unit={e.unit} />
+        <Panel key={e.name} e={e} />
       ))}
       <button onClick={() => router.push("/admin")}>See the logs</button>
     </main>
   );
 }
 
-function Panel({ name, value, unit }) {
+function Panel({ e: {name, value, unit} }) {
   return (
     <div>
       <p className="text-xs">{name}:</p>

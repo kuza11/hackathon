@@ -28,6 +28,9 @@ const client  = mqtt.connect('mqtt://192.168.103.219',options);
 console.log("still going");
 client.on('connect', () => {
   console.log('Connected to MQTT broker');
+    client.subscribe('senzor/console/log', (err) => {
+    if (err) throw err;
+  });
   client.subscribe('message', (err) => {
     if (err) throw err;
   });
@@ -53,19 +56,19 @@ client.on('senzor/console/log', (topic, message) => {
     // message is a Buffer
     console.log("someone called me");
 
-    // console.log(`Received message on ${topic}: ${message.toString()}`);
+    console.log(`Received message on ${topic}: ${message.toString()}`);
     
-    // const msgObj = JSON.parse(message.toString());
-    // const device = msgObj.device;
-    // const timestamp = msgObj.timestamp;
-    // const sensorTop = msgObj.sensor_top;
-    // const sensorBottom = msgObj.sensor_bottom;
-    // const angle = msgObj.angle;
+    const msgObj = JSON.parse(message.toString());
+    const device = msgObj.device;
+    const timestamp = msgObj.timestamp;
+    const sensorTop = msgObj.sensor_top;
+    const sensorBottom = msgObj.sensor_bottom;
+    const angle = msgObj.angle;
   
-    // // Save the message to the database
-    // const query = "INSERT INTO devices (device, timestamp, sensor_top, sensor_bottom, angle) VALUES (?, ?, ?, ?, ?)";
-    // db.query(query, [device, timestamp, sensorTop, sensorBottom, angle], (err, result) => {
-    //   if (err) console.log('Message could not be saved in the database');
-    //   console.log('Message saved to the database');
-    // });
+    // Save the message to the database
+    const query = "INSERT INTO devices (device, timestamp, sensor_top, sensor_bottom, angle) VALUES (?, ?, ?, ?, ?)";
+    db.query(query, [device, timestamp, sensorTop, sensorBottom, angle], (err, result) => {
+      if (err) console.log('Message could not be saved in the database');
+      console.log('Message saved to the database');
+    });
   });

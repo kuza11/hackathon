@@ -36,7 +36,7 @@ client.on('message', (topic, message) => {
   console.log(`Received message on ${topic}: ${message.toString()}`);
   
   // Save the message to the database
-  const query = "INSERT INTO angle (mac, angle) VALUES ('00:1B:44:11:3A:B7', 128.55)";
+  const query = "INSERT INTO angles (mac, angle) VALUES ('00:1B:44:11:3A:B7', 128.55)";
   db.query(query, [message.toString()], (err, result) => {
     if (err) throw err;
     console.log('Message saved to the database');

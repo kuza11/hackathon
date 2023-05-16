@@ -52,6 +52,7 @@ client.on('device', (topic, message) => {
 client.on('senzor/console/log', (topic, message) => {
     // message is a Buffer
     console.log("someone called me");
+
     // console.log(`Received message on ${topic}: ${message.toString()}`);
     
     // const msgObj = JSON.parse(message.toString());

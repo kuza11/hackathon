@@ -1,24 +1,26 @@
 export default function Stats() {
   let stats = [
-    { value: "1000", name: "Number of panels" },
-    { value: "9080", name: "Price" },
+    { value: "9080", name: "Price", unit: "$" },
+    { value: "10", name: "Time to evaluation", unit: "days" },
+    { value: "1000", name: "Power per year", unit: "W/year" },
+    { value: "800", name: "Income per month", unit: "$" },
   ];
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-24 gap-2">
-      {stats.map((e) => {
-        return <Panel key={e.name} name={e.name} value={e.value} />;
-      })}
+    <main className="flex min-h-screen flex-col items-center p-24 gap-8 text-2xl">
+      {stats.map((e) => (
+        <Panel key={e.name} name={e.name} value={e.value} unit={e.unit} />
+      ))}
     </main>
   );
 }
 
-function Panel({ name, value }) {
+function Panel({ name, value, unit }) {
   return (
     <div>
-      <p className="text-xs text-slate-600">{name}:</p>
-      <p className="w-32 rounded-lg border-2 border-slate-400 px-1 text-slate-800">
-        {value}
+      <p className="text-xs">{name}:</p>
+      <p className="w-64 rounded-lg border-2 border-slate-400 px-1 text-slate-800">
+        {value} {unit}
       </p>
     </div>
   );

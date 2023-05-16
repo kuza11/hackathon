@@ -1,16 +1,14 @@
-export default function Stats() {
-  let stats = [
-    { value: "9080", name: "Price", unit: "$" },
-    { value: "10", name: "Time to evaluation", unit: "days" },
-    { value: "1000", name: "Power per year", unit: "W/year" },
-    { value: "800", name: "Income per month", unit: "$" },
-  ];
+import { useRouter } from "next/router";
+
+export default function Stats({ stats }) {
+  let router = useRouter();
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24 gap-8 text-2xl">
       {stats.map((e) => (
         <Panel key={e.name} name={e.name} value={e.value} unit={e.unit} />
       ))}
+      <button onClick={() => router.push("/admin")}>See the logs</button>
     </main>
   );
 }

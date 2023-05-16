@@ -48,10 +48,13 @@ client.on('message', (topic, message) => {
     console.log('Message saved to the database');
   });
 });
+
+
+
 //test message
 client.on('connect', () => {
     const data = {
-        mac: "00:1B:44:99:99:99",
+        mac: "00:1B:44:99:99:89",
         angle: 69.69
     };
 

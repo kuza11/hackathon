@@ -11,7 +11,11 @@
   "dependencies": {
     "@influxdata/influxdb-client": "^1.33.2",
     "@influxdata/influxdb-client-apis": "^1.33.2",
+    "@mysql/xdevapi": "8.0.33",
     "autoprefixer": "10.4.14",
+    "mariadb": "^3.1.2",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.3.1",
     "next": "13.4.2",
     "postcss": "8.4.23",
     "react": "18.2.0",

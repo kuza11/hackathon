@@ -1,6 +1,6 @@
 const mysql = require('mysql2');
-const mqtt = require('mqtt');
-<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/paho-mqtt.min.js"></script>
+const mqtt = require('paho.mqtt.client');
+
 // Database Setup
 const db = mysql.createConnection({
     host: '127.0.0.1',
@@ -9,11 +9,6 @@ const db = mysql.createConnection({
     password: 'ZlabSuckDick',
     database: 'hackathon'
 });
-
-const client = new Paho.MQTT.Client(brokerAddress, brokerPort, "clientId");
-
-client.onConnectionLost = onConnectionLost;
-client.onMessageArrived = onMessageArrived;
 
 db.connect(error => {
     if (error) {

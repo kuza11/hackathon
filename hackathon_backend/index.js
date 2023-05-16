@@ -24,7 +24,7 @@ const options = {
     password: 'senzor12345'
   };
 
-const client  = mqtt.connect('mqtt://192.168.103.219:1884',options);
+const client  = mqtt.connect('mqtt://192.168.103.219',options);
 console.log("still going");
 client.on('connect', () => {
   console.log('Connected to MQTT broker');

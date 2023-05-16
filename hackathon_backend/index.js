@@ -41,10 +41,10 @@ client.on('connect', () => {
         // Publish a message
         const topic = 'senzor/console/log';
         const message = JSON.stringify({
-            device: 'test_device',
-            timestamp: 5448,
-            sensor_top: 69,
-            sensor_bottom: 420,
+            device: 'your_device',
+            timestamp: 123456789,
+            sensor_top: 420,
+            sensor_bottom: 69,
             angle: 20.69
         });
         client.publish(topic, message, (err) => {
@@ -72,12 +72,26 @@ client.on('message', (topic, message) => {
         const angle = msgObj.angle;
   
         // Save the message to the database
-        const query = "INSERT INTO data (time, mac, sens_top, sens_bottom) VALUES (?, ?, ?, ?)";
-        db.query(query, [timestamp, device, sensorTop, sensorBottom], (err, result) => {
+        const query = "INSERT INTO data (time, mac, sens_top, sens_bottom, temperature) VALUES (?, ?, ?, ?, ?)";
+        db.query(query, [timestamp, device, sensorTop, sensorBottom, 10], (err, result) => {
             if (err) {
-                console.log('Message could not be saved in the database');
+                console.log('Log could not be saved in the database');
             } else {
-                console.log('Message saved to the database');
+                //add new device
+                console.log('Log saved to the database');
+                try {
+                    // Save the message to the database
+                    const query = "INSERT INTO devices (mac, angle) VALUES (?, ?)";
+                    db.query(query, [device, angle], (err, result) => {
+                        if (err) {
+                           console.log('Device could not be saved in the database');
+                        } else {
+                            console.log('Device saved to the database');
+                        }
+                        });
+                    } catch (error) {
+                    console.log('Error parsing JSON message:', error.message);
+                }
             }
         });
       } catch (error) {

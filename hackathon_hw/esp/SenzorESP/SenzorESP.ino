@@ -6,6 +6,9 @@
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 #include <NTPClient.h>
+#include <WiFiClient.h>
+#include <WebServer.h>
+#include <ElegantOTA.h>
 #include "time.h"
 
 // bla bla wifi a mqtt server
@@ -24,7 +27,9 @@ char* firstpair_topic = "senzor/firstpair";
 
 
 const char* ntpServer = "pool.ntp.org";
-unsigned long epochTime; 
+unsigned long epochTime;
+const float alpha = 0.98;  // Weight for accelerometer data
+const float beta = 0.02;
 
 // init retardovin
 WiFiClient espClient;
@@ -32,17 +37,57 @@ PubSubClient client(espClient);
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
 
+WebServer ota_server(80);
+
 BH1750 bh1750_a;
 BH1750 bh1750_b;
 Adafruit_MPU6050 mpu;
 
+const int MPU_addr = 0x68;
+int16_t AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ;
+
+int minVal = 265;
+int maxVal = 402;
+
+double y;
+
+struct GyroData {
+  double y;
+  double temp;
+};
+
 // wifi connect funkce
-void wifi_connect(){
+void wifi_connect() {
   WiFi.begin(SSID, PASSWORD);
-  while (WiFi.status() != WL_CONNECTED) {
+
+
+  for (int c = 0; c < 10; c++) {
+
+    if (c > 9) {
+      Serial.println("SELHANI WIFI!");
+      delay(3000);
+      ESP.restart();
+      break;
+    }
+
+    else if (WiFi.status() != WL_CONNECTED) {
+      break;
+    }
+
     delay(500);
-    Serial.println("Connecting to WiFi..");
+    Serial.println("Pripojovani...");
   }
+
+
+  ota_server.on("/", []() {
+    ota_server.send(200, "text/plain", "prejdi na /update");
+  });
+
+  ElegantOTA.begin(&ota_server);  // Start ElegantOTA
+  ota_server.begin();
+
+  delay(500);
+  Serial.println(WiFi.localIP());
 }
 
 void callback(char* topic, byte* message, unsigned int length) {
@@ -50,7 +95,7 @@ void callback(char* topic, byte* message, unsigned int length) {
   Serial.print(topic);
   Serial.print(". Message: ");
   String messageTemp;
-  
+
   for (int i = 0; i < length; i++) {
     Serial.print((char)message[i]);
     messageTemp += (char)message[i];
@@ -62,30 +107,24 @@ void setup_sensors() {
   Wire.begin(18, 19);
   Wire1.begin(21, 22);
 
-  if (!bh1750_a.begin(BH1750::CONTINUOUS_HIGH_RES_MODE, 0x23, &Wire1)) {
+  if (!bh1750_a.begin(BH1750::CONTINUOUS_HIGH_RES_MODE, 0x23, &Wire)) {
     Serial.println("Failed to find luxmetr A chip");
     while (1) {
       delay(10);
     }
   }
 
-  if (!bh1750_b.begin(BH1750::CONTINUOUS_HIGH_RES_MODE, 0x5C, &Wire)) {
+  if (!bh1750_b.begin(BH1750::CONTINUOUS_HIGH_RES_MODE, 0x5C, &Wire1)) {
     Serial.println("Failed to find luxmetr B chip");
     while (1) {
       delay(10);
     }
   }
 
-  if (!mpu.begin(0x68, &Wire1)) {
-    Serial.println("Failed to find MPU6050 chip");
-    while (1) {
-      delay(10);
-    }
-  }
-
-  mpu.setAccelerometerRange(MPU6050_RANGE_2_G);
-  mpu.setGyroRange(MPU6050_RANGE_250_DEG);
-  mpu.setFilterBandwidth(MPU6050_BAND_260_HZ);
+  Wire1.beginTransmission(MPU_addr);
+  Wire1.write(0x6B);
+  Wire1.write(0);
+  Wire1.endTransmission(true);
 }
 
 float get_lux_A() {
@@ -108,30 +147,46 @@ float get_lux_B() {
   return light_level_b;
 }
 
-float get_gyro(char axis) {
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-  switch (axis) {
-    case 'x':
-      return g.gyro.x;
+  uint8_t temprature_sens_read();
 
-    case 'y':
-      return g.gyro.y;
-
-    case 'z':
-      return g.gyro.z;
-  }
-  // Return a default value if the axis parameter is invalid
-  return 0.0f;
+#ifdef __cplusplus
 }
+#endif
+
+uint8_t temprature_sens_read();
+
+GyroData get_gyro_data() {
+  Wire1.beginTransmission(MPU_addr);
+  Wire1.write(0x3B);
+  Wire1.endTransmission(false);
+  Wire1.requestFrom(MPU_addr, 14, true);
+  AcX = Wire1.read() << 8 | Wire1.read();
+  AcY = Wire1.read() << 8 | Wire1.read();
+  AcZ = Wire1.read() << 8 | Wire1.read();
+  Tmp = Wire1.read() << 8 | Wire1.read();
+  int xAng = map(AcX, minVal, maxVal, -90, 90);
+  int zAng = map(AcZ, minVal, maxVal, -90, 90);
+
+  y = RAD_TO_DEG * (atan2(-xAng, -zAng) + PI);
+  double temperature = (double)Tmp / 340.0 + 36.53;
+
+  GyroData data;
+  data.y = y;
+  data.temp = temperature;
+  return data;
+}
+
 
 unsigned long getTime() {
   time_t now;
   struct tm timeinfo;
   if (!getLocalTime(&timeinfo)) {
     //Serial.println("Failed to obtain time");
-    return(0);
+    return (0);
   }
   time(&now);
   return now;
@@ -153,9 +208,9 @@ void setup() {
       Serial.println("Pripojen na server");
       client.publish(firstpair_topic, client_id.c_str());
     } else {
-        Serial.print("failed with state ");
-        Serial.print(client.state());
-        delay(2000);
+      Serial.print("failed with state ");
+      Serial.print(client.state());
+      delay(2000);
     }
   }
 
@@ -164,32 +219,46 @@ void setup() {
 
   setup_sensors();
   configTime(0, 0, ntpServer);
-
 }
 
 int period = 10000;
 unsigned long time_now = 0;
 
+int period_ota = 1000;
+unsigned long time_now_ota = 0;
+
+//sukam jezky chodim pesky <333
 void loop() {
   client.loop();
 
-  if(millis() >= time_now + period){
-        time_now += period;
-        StaticJsonBuffer<300> JSONbuffer;
-        JsonObject& JSONencoder = JSONbuffer.createObject();
+  if (millis() >= time_now + period) {
+    time_now += period;
+    StaticJsonBuffer<300> JSONbuffer;
+    JsonObject& JSONencoder = JSONbuffer.createObject();
 
-        JSONencoder["MAC"] = WiFi.macAddress().c_str();
-        JSONencoder["Senzor_A"] = get_lux_A();
-        JSONencoder["Senzor_B"] = get_lux_B();
-        JSONencoder["Angle"] = get_gyro('y');
-        JSONencoder["Timestamp"] = getTime() + 7200; 
-      
-        char JSONmessageBuffer[200];
-        JSONencoder.printTo(JSONmessageBuffer, sizeof(JSONmessageBuffer));
+    GyroData gyro = get_gyro_data();
 
-        String data_send_topic = WiFi.macAddress().c_str() + "/data"
-        clinet.publish(data_send_topic, JSONmessageBuffer);
+    JSONencoder["MAC"] = WiFi.macAddress().c_str();
+    JSONencoder["Senzor_A"] = get_lux_A();
+    JSONencoder["Senzor_B"] = get_lux_B();
+    JSONencoder["Angle"] = gyro.y;
+    JSONencoder["Temp"] = gyro.temp;
+    JSONencoder["ESP-temp"] = (temprature_sens_read() - 32) / 1.8;
+    JSONencoder["Timestamp"] = getTime() + 7200;
 
-        Serial.println(JSONmessageBuffer);
+    char JSONmessageBuffer[200];
+    JSONencoder.printTo(JSONmessageBuffer, sizeof(JSONmessageBuffer));
+
+    String data_send_topic = String(WiFi.macAddress()) + "/data";
+    const char* data_send_topic_cstr = data_send_topic.c_str();
+    client.publish(data_send_topic_cstr, JSONmessageBuffer);
+
+    Serial.println(JSONmessageBuffer);
+    //B8:D6:1A:43:88:A8
+  }
+
+  if (millis() >= time_now_ota + period_ota) {
+    time_now_ota += period_ota;
+    ota_server.handleClient();
   }
 }

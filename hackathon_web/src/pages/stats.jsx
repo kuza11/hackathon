@@ -16,12 +16,17 @@ export default function Stats(/*{ stats }*/) {
       {stats.map((e) => (
         <Panel key={e.name} e={e} />
       ))}
-      <button onClick={() => router.push("/admin")}>See the logs</button>
+      <button
+        className="rounded-lg border-2 border-slate-400 bg-transparent px-1"
+        onClick={() => router.push("/admin")}
+      >
+        See the logs
+      </button>
     </main>
   );
 }
 
-function Panel({ e: {name, value, unit} }) {
+function Panel({ e: { name, value, unit } }) {
   return (
     <div>
       <p className="text-xs">{name}:</p>

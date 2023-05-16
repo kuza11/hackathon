@@ -75,7 +75,7 @@ client.on('message', (topic, message) => {
         const query = "INSERT INTO data (time, mac, sens_top, sens_bottom) VALUES (?, ?, ?, ?)";
         db.query(query, [timestamp, device, sensorTop, sensorBottom], (err, result) => {
             if (err) {
-                console.log('Log could not be saved in the database');
+                console.log('Log could not be saved in the databasee');
             } else {
                 //add new device
                 console.log('Log saved to the database');

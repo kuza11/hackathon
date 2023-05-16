@@ -42,3 +42,7 @@ client.on('message', (topic, message) => {
     console.log('Message saved to the database');
   });
 });
+//test message
+testClient.on('connect', () => {
+    testClient.publish('message', 'Test message');
+  });

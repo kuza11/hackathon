@@ -1,11 +1,11 @@
-const mysql = require('mysql');
+var mysql = require('@mysql/xdevapi');
 const mqtt = require('mqtt');
 
 // Database Setup
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    port: 3306,
+    port: 33060,
     password: 'ZlabSuckDick',
     database: 'hackathon'
 });

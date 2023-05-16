@@ -35,3 +35,6 @@ client.loop_forever()
 
 def publish_message(topic, message):
     client.publish(topic, message)
+    
+publish_message("senzor/console/log", "{\"device\": \"your_device\", \"timestamp\": 123456789, \"sensor_top\": 420, \"sensor_bottom\": 69, \"angle\": 20.69}")
+subscribe_topic("B8:D6:1A:43:88:A8/data")

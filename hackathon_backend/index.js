@@ -44,7 +44,11 @@ client.on('message', (topic, message) => {
   // Save the message to the database
   const query = "INSERT INTO devices (mac, angle) VALUES (?, ?)";
   db.query(query, [mac, angle], (err, result) => {
-    if (err) throw err;
+    if (err)
+    {
+        console.log('Message could not be saved in the database');
+        throw err
+    };
     console.log('Message saved to the database');
   });
 });

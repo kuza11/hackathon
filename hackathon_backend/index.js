@@ -10,13 +10,17 @@ const db = mariadb.createConnection({
     database: 'hackathon'
 });
 
-db.connect()
-  .then(() => {
-    console.log('Connected to the database');
-  })
-  .catch(err => {
-    throw err;
-  });
+try {
+    db.connect()
+      .then(() => {
+        console.log('Connected to the database');
+      })
+      .catch(err => {
+        throw err;
+      });
+  } catch (err) {
+    console.error('Error connecting to the database:', err);
+  }
 
 // MQTT Setup
 const options = {

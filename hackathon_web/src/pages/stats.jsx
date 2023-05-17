@@ -14,17 +14,24 @@ import { useEffect } from "react";
 export default function Stats(/*{ stats }*/) {
   let router = useRouter();
 
-  const graph_stats = stats.message.eff_graph.graph;
-  const threshold = stats.message.eff_graph.threshold;
+  let graph_stats = stats.message.eff_graph.graph;
+  const treshold = stats.message.eff_graph.treshold;
+  graph_stats = graph_stats.map((e) => {
+    return {
+      time: e.time,
+      eff: e.eff,
+      treshold,
+    };
+  });
   const power_graph = stats.message.power_graph;
   const moneyloss = stats.message.stats;
   const power_to_temp = stats.message.power_to_temp;
 
   useEffect(() => {
-    if (graph_stats.last <= threshold) {
-
+    if (graph_stats.last <= treshold) {
+      alert("Clean your panels!");
     }
-  }, [threshold, graph_stats.last]);
+  }, [treshold, graph_stats.last]);
 
   function cleaned() {
     fetch("/api/cleaning", {
@@ -39,23 +46,39 @@ export default function Stats(/*{ stats }*/) {
   return (
     <main className="flex min-h-screen flex-col items-center p-24 text-2xl">
       <h1>Effectivity of panels over time</h1>
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer height={300}>
         <LineChart data={graph_stats}>
           <XAxis dataKey="time" />
           <YAxis />
-          <Line strokeWidth={5} type="monotone" dataKey="eff" stroke="#ff0000" />
+          <Line
+            strokeWidth={5}
+            type="monotone"
+            dataKey="eff"
+            stroke="#ff0000"
+            dot={false}
+          />
+          <Line
+            type="monotone"
+            dataKey="treshold"
+            strike="#80e64d"
+            dot={false}
+          />
           <Tooltip />
         </LineChart>
       </ResponsiveContainer>
-
-      <button onClick={() => toast.warn("Yay")}>Toast</button>
 
       <h1 className="mt-8">Power graph</h1>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={power_graph}>
           <XAxis dataKey="time" />
           <YAxis />
-          <Line strokeWidth={5} type="monotone" dataKey="power" stroke="#ff0000" />
+          <Line
+            strokeWidth={5}
+            type="monotone"
+            dataKey="power"
+            stroke="#ff0000"
+            dot={false}
+          />
           <Tooltip />
         </LineChart>
       </ResponsiveContainer>
@@ -65,7 +88,13 @@ export default function Stats(/*{ stats }*/) {
         <LineChart data={power_to_temp}>
           <XAxis dataKey="temp" />
           <YAxis domain={[90, 100]} />
-          <Line strokeWidth={5} type="monotone" dataKey="power" stroke="#ff0000" />
+          <Line
+            strokeWidth={5}
+            type="monotone"
+            dataKey="power"
+            stroke="#ff0000"
+            dot={false}
+          />
           <Tooltip />
         </LineChart>
       </ResponsiveContainer>

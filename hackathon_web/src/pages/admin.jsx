@@ -1,5 +1,18 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import  useSWR  from 'swr'
+let tmr;
+
+async function getData(){
+
+	const res = await fetch('/api/live');
+
+	const data = await res.json();
+
+
+	return data;
+
+}
 
 export default function Admin() {
   return (
@@ -14,17 +27,34 @@ function Logs() {
   const [logs, setLogs] = useState([
     { time: 12, sens_top: 89, sens_bottom: 90, angle: 90 },
   ]);
+  const [text, setText] = useState(logs.map((e) => objToLog(e)))
   const router = useRouter();
 
-  setInterval(() => {
-    router.push("/admin");
-  }, 1000);
 
-  /* useEffect(() => {
-    fetch("/api/live")
-      .then((res) => res.json())
-      .then((data) => setLogs(data));
-  }, [setLogs]); */
+  const [data, setData] = useState(null);
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval( async() => {
+      
+      let resp = await getData();
+      //console.log(resp);
+      setData(resp);
+      //console.log(data);
+    }, 2000); // fetch every 5000 milliseconds (5 seconds)
+
+    return () => clearInterval(interval); // cleanup on unmount
+  }, []);
+  
+  /*const fetcher = (...args) => fetch(...args).then((res) => res.json());
+  let result = useSWR('/api/todos', fetcher, { refreshInterval: 1000 });*/
+
+  /*useEffect(() => {
+    setLogs(result);
+   // setText(logs.map((e) => objToLog(e)))
+  }, [setLogs]);*/
+
+  
 
   function objToLog(obj) {
     return `[${new Date(obj.time * 1000).toDateString()}]: top sensor: ${obj.sens_top
@@ -32,8 +62,9 @@ function Logs() {
   }
 
   return (
-    <textarea readOnly className="bg-slate-900 text-slate-50 w-full h-96">
-      {logs.map((e) => objToLog(e))}
-    </textarea>
+    
+     <p> {JSON.stringify(data)}</p>
+   
   );
 }
+

@@ -13,6 +13,7 @@
     "@influxdata/influxdb-client-apis": "^1.33.2",
     "@mysql/xdevapi": "8.0.33",
     "autoprefixer": "10.4.14",
+    "cors": "^2.8.5",
     "mariadb": "^3.1.2",
     "mysql": "^2.18.1",
     "mysql2": "^3.3.1",
@@ -22,6 +23,7 @@
     "react-dom": "18.2.0",
     "recharts": "^2.6.2",
     "regression": "^2.0.1",
+    "swr": "^2.1.5",
     "tailwindcss": "3.3.2"
   }
 }

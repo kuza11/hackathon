@@ -5,19 +5,14 @@ const fs = require("fs");
 
 const apiKey = "L8WVN84TSGUFYE75PSCYX5UJT";
 
-process.env.DB_HOST = config.host;
-process.env.DB_USER = config.username;
-process.env.DB_PASSWORD = config.password;
-process.env.DB_DATABASE = config.database;
-process.env.DB_PORT = config.port;
 
 export default async function handler(req, res) {
   const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    port: process.env.DB_PORT,
+    host: config.host,
+    user: config.username,
+    password: config.password,
+    database: config.database,
+    port: config.port,
   });
   (await connection).connect((error) => {
     if (error) {

@@ -3,11 +3,11 @@ const config = require("../../../config.json");
 
 export default async function handler(req, res) {
   const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    port: process.env.DB_PORT,
+    host: config.host,
+    user: config.username,
+    password: config.password,
+    database: config.database,
+    port: config.port,
   });
   (await connection).connect((error) => {
     if (error) {
@@ -19,10 +19,11 @@ export default async function handler(req, res) {
   });
 
 
-  let result = await (await connection).query("SELECT * FROM devices")[0][0]
+  let result = (await (await connection).query("SELECT * FROM devices"))[0];
+  console.log(result);
 
   res.status(200).json({message: result});
 
 
-
+  (await connection).end();
 }

@@ -1,6 +1,8 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
 
+
+
 export default function Home({ setStats }) {
   const [panelInfo, setPanelInfo] = useState({ panel_count: null, power_per_panel: null });
   const router = useRouter();

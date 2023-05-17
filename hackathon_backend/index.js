@@ -3,7 +3,7 @@
 const mysql = require('mysql2');
 const mqtt = require('mqtt');
 
-const queueDelay = 5000; //Rate wich data is being send onto database
+const queueDelay = 3600000 ; //Rate wich data is being send onto database
 var queueDelayCurrent = queueDelay;
 var queueDelayRunning = false;
 var logQueue = [];

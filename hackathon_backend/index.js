@@ -90,6 +90,7 @@ function addLogs()
             const sensorBottom = msgObj.Senzor_B / ammount;
             const angle = msgObj.Angle;
             const temperature = msgObj.ESP_temp / ammount;
+            console.log(timestamp+" "+sensorTop+" "+sensorBottom+" "+temperature);
 
             // Save the log to the database
             const query = "INSERT INTO data (time, mac, sens_top, sens_bottom, temperature) VALUES (?, ?, ?, ?, ?)";
@@ -133,12 +134,28 @@ client.publish('B8:D6:1A:47:D7:A7/data', JSON.stringify({
     ESP_temp: 10.00,
 }));
 client.publish('B8:D6:1A:47:D7:A7/data', JSON.stringify({
+    MAC: 'ligma',
+    Timestamp: 500,
+    Senzor_A: 500,
+    Senzor_B: 500,
+    Angle: 50.00,
+    ESP_temp: 50.00,
+}));
+client.publish('B8:D6:1A:47:D7:A7/data', JSON.stringify({
     MAC: 'hovno',
     Timestamp: 200,
     Senzor_A: 200,
     Senzor_B: 200,
     Angle: 20.00,
     ESP_temp: 20.00,
+}));
+client.publish('B8:D6:1A:47:D7:A7/data', JSON.stringify({
+    MAC: 'ligma',
+    Timestamp: 400,
+    Senzor_A: 400,
+    Senzor_B: 400,
+    Angle: 40.00,
+    ESP_temp: 40.00,
 }));
 client.publish('B8:D6:1A:47:D7:A7/data', JSON.stringify({
     MAC: 'hovno',

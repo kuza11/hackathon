@@ -25,7 +25,7 @@ function Logs() {
   return (
     <>
       <h1>Live logs from sensors</h1>
-      <textarea>{objToLog(logs)}</textarea>
+      <textarea className="bg-slate-600 text-slate-50">{objToLog(logs)}</textarea>
     </>
   );
 }

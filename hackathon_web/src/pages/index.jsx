@@ -25,6 +25,7 @@ export default function Home({ setStats }) {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24 gap-4 text-2xl">
+      <h1 className="text-5xl font-extrabold mb-8">DSSE</h1>
       <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
         <input
           className="rounded-lg border-2 border-slate-400 bg-transparent px-1"

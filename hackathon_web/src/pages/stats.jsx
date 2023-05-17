@@ -47,6 +47,7 @@ export default function Stats(/*{ stats }*/) {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24 text-2xl">
+      <h1 className="text-5xl font-extrabold mb-8">DSSE</h1>
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -80,6 +81,8 @@ export default function Stats(/*{ stats }*/) {
           <Tooltip />
         </LineChart>
       </ResponsiveContainer>
+
+      <button className="rounded-lg border-2 border-slate-400 bg-transparent px-1 mt-8" onClick={() => cleaned()}>I cleaned my panels</button>
 
       <h1 className="mt-8">Power graph</h1>
       <ResponsiveContainer width="100%" height={300}>
@@ -136,8 +139,6 @@ export default function Stats(/*{ stats }*/) {
       >
         See the logs
       </button>
-
-      <button onClick={() => cleaned()}></button>
     </main>
   );
 }

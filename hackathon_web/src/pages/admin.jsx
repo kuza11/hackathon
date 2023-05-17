@@ -1,31 +1,39 @@
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 export default function Admin() {
   return (
     <main className="flex min-h-screen flex-col items-center p-24 text-2xl">
-      <h1>Logs from devices</h1>
+      <h1 className="mb-8">Logs from devices</h1>
       <Logs />
     </main>
   );
 }
 
 function Logs() {
-  const [logs, setLogs] = useState([]);
+  const [logs, setLogs] = useState([
+    { time: 12, sens_top: 89, sens_bottom: 90, angle: 90 },
+  ]);
+  const router = useRouter();
 
-  useEffect(() => {
+  setInterval(() => {
+    router.push("/admin");
+  }, 1000);
+
+  /* useEffect(() => {
     fetch("/api/live")
       .then((res) => res.json())
       .then((data) => setLogs(data));
-  }, [setLogs]);
+  }, [setLogs]); */
 
   function objToLog(obj) {
-    return `[${obj.time}]: top sensor: ${obj.sens_top}, bottom sensor: ${obj.sens_bottom}, at angle: ${obj.angle}`;
+    return `[${new Date(obj.time * 1000).toDateString()}]: top sensor: ${obj.sens_top
+      }, bottom sensor: ${obj.sens_bottom}, at angle: ${obj.angle};\n`;
   }
 
   return (
-    <>
-      <h1>Live logs from sensors</h1>
-      <textarea className="bg-slate-600 text-slate-50">{objToLog(logs)}</textarea>
-    </>
+    <textarea readOnly className="bg-slate-900 text-slate-50 w-full h-96">
+      {logs.map((e) => objToLog(e))}
+    </textarea>
   );
 }

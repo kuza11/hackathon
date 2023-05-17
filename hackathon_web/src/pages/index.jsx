@@ -1,8 +1,6 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
 
-
-
 export default function Home({ setStats }) {
   const [panelInfo, setPanelInfo] = useState({ panel_count: null, power_per_panel: null });
   const router = useRouter();
@@ -26,7 +24,7 @@ export default function Home({ setStats }) {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-24 gap-4 text-2xl">
+    <main className="flex min-h-screen flex-col items-center p-16 gap-4 text-2xl">
       <h1 className="text-5xl font-extrabold mb-8">DSSE</h1>
       <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
         <input

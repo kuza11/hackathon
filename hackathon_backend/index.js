@@ -70,7 +70,7 @@ client.on('message', (topic, message) => {
             try {
                 // Save the device to the database
                 const query = "INSERT INTO devices (mac, angle, sens_top, sens_bottom, temperature, time) VALUES (?, ?, ?, ?, ?, ?)";
-                db.query(query, [msgObj.MAC, msgObj.Angle, msgObj.Senzor_A, msgObj.Senzor_B, msgObj.ESP_temp, msgObj.Timestamp ], (err, result) => {
+                db.query(query, [msgObj.MAC, msgObj.Angle, msgObj.Senzor_A, msgObj.Senzor_B, msgObj.Temp, msgObj.Timestamp ], (err, result) => {
                     if (err) {
                         console.log('Device could not be saved in the database');
                     } else {
@@ -86,7 +86,7 @@ client.on('message', (topic, message) => {
             logQueueAmmount[index]++;
             console.log(logQueue[index].MAC +" na index "+index+" je ted "+ logQueueAmmount[index]);
             logQueue[index].Timestamp += msgObj.Timestamp;
-            logQueue[index].ESP_temp += msgObj.ESP_temp;
+            logQueue[index].ESP_temp += msgObj.Temp;
             logQueue[index].Senzor_A += msgObj.Senzor_A;
             logQueue[index].Senzor_B += msgObj.Senzor_B;
 
@@ -100,7 +100,7 @@ client.on('message', (topic, message) => {
                     WHERE mac = ?
                   `;
               
-                  const [result] = await db.promise().execute(query, [msgObj.Angle, msgObj.Senzor_A, msgObj.Senzor_B, msgObj.ESP_temp, msgObj.Timestamp, msgObj.MAC]);
+                  const [result] = await db.promise().execute(query, [msgObj.Angle, msgObj.Senzor_A, msgObj.Senzor_B, msgObj.Temp, msgObj.Timestamp, msgObj.MAC]);
               
                   if (result.affectedRows > 0) {
                     console.log('Device updated successfully.');
@@ -128,7 +128,7 @@ function addLogs()
             const sensorTop = msgObj.Senzor_A / ammount;
             const sensorBottom = msgObj.Senzor_B / ammount;
             const angle = msgObj.Angle;
-            const temperature = msgObj.ESP_temp / ammount;
+            const temperature = msgObj.Temp / ammount;
             
 
             // Save the log to the database

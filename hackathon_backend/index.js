@@ -1,5 +1,3 @@
-'use strict'
-
 const mysql = require('mysql2');
 const mqtt = require('mqtt');
 

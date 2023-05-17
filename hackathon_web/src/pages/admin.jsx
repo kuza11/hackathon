@@ -1,17 +1,9 @@
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import  useSWR  from 'swr'
-let tmr;
 
 async function getData(){
-
 	const res = await fetch('/api/live');
-
 	const data = await res.json();
-
-
 	return data;
-
 }
 
 export default function Admin() {
@@ -25,47 +17,20 @@ export default function Admin() {
 }
 
 function Logs() {
-  const [logs, setLogs] = useState([
-    { time: 12, sens_top: 89, sens_bottom: 90, angle: 90 },
-  ]);
-  const [text, setText] = useState(logs.map((e) => objToLog(e)))
-  const router = useRouter();
-
-
   const [data, setData] = useState(null);
-  const [count, setCount] = useState(0);
 
   useEffect(() => {
     const interval = setInterval( async() => {
-      
       let resp = await getData();
       //console.log(resp);
       setData(resp);
       //console.log(data);
-    }, 2000); // fetch every 5000 milliseconds (5 seconds)
+    }, 1000); // fetch every 5000 milliseconds (5 seconds)
 
     return () => clearInterval(interval); // cleanup on unmount
   }, []);
-  
-  /*const fetcher = (...args) => fetch(...args).then((res) => res.json());
-  let result = useSWR('/api/todos', fetcher, { refreshInterval: 1000 });*/
-
-  /*useEffect(() => {
-    setLogs(result);
-   // setText(logs.map((e) => objToLog(e)))
-  }, [setLogs]);*/
-
-  
-
-  function objToLog(obj) {
-    return `[${new Date(obj.time * 1000).toDateString()}]: top sensor: ${obj.sens_top
-      }, bottom sensor: ${obj.sens_bottom}, at angle: ${obj.angle};\n`;
-  }
 
   return (
-    
-     <p> {JSON.stringify(data)}</p>
-   
+     <div className="bg-slate-900 text-slate-50 w-full h-96 whitespace-pre-wrap">{data && data.message.filter(e => e.mac == "B8:D6:1A:47:D7:A8" || e.mac == "B8:D6:1A:43:88:A8").slice(0, 2).map((e) => {return `     MAC address: ${e.mac}     time: ${new Date(e.time * 1000).toLocaleString()}     temperature: ${parseFloat(e.temperature)}˚C     angle: ${parseFloat(e.angle).toFixed(2)}°     sensor A: ${parseFloat(e.sens_bottom).toFixed(2)} lux     sensor B: ${parseFloat(e.sens_top).toFixed(2)} lux \n`})}</div>
   );
 }
-

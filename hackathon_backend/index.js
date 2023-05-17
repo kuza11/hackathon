@@ -34,26 +34,25 @@ const options = {
 
 const client = mqtt.connect('mqtt://192.168.103.219', options);
 
-client.subscribe('B8:D6:1A:47:D7:A7/data')
+client.subscribe('B8:D6:1A:47:D7:A8/data')
+client.subscribe('B8:D6:1A:43:88:A8/data')
 
 client.on('message', (topic, message) => {
     console.log('Received message on topic:', topic);
     console.log('Message:', message.toString());
     //ON LOG RECEIVE
-    if (topic === 'B8:D6:1A:47:D7:A7/data') {
+    if (topic === 'B8:D6:1A:47:D7:A8/data' || topic === 'B8:D6:1A:43:88:A8/data') {
         
         const msgObj = JSON.parse(message.toString());
 
         //Queue
-        var index = 0;
+        var index = -1;
         const macExists = logQueue.some((log) => {
             // Assume each log is an object with a 'MAC' property
             index++;
             if(log.MAC === msgObj.MAC){
-                index = 0;
                 return true;
             }
-
         });
         if(!macExists)
         {
@@ -68,14 +67,56 @@ client.on('message', (topic, message) => {
                     queueDelayRunning = false;
                 }, queueDelayCurrent);
             }
+            //add new device
+            console.log('Log saved to the database');
+            try {
+                // Save the device to the database
+                const query = "INSERT INTO devices (mac, angle, sens_top, sens_bottom, temperature, time) VALUES (?, ?, ?, ?, ?, ?)";
+                db.query(query, [msgObj.MAC, msgObj.Angle, msgObj.Senzor_A, msgObj.Senzor_B, msgObj.ESP_temp, msgObj.Timestamp ], (err, result) => {
+                    if (err) {
+                        console.log('Device could not be saved in the database');
+                    } else {
+                        console.log('Device saved to the database');
+                    }
+                });
+                } catch (error) {
+                    console.log('Error parsing JSON message:', error.message);
+                }
         }
         else{
+            //add values
             logQueueAmmount[index]++;
-            logQueue[index].timestamp += msgObj.Timestamp;
-            logQueue[index].temperature += msgObj.ESP_temp;
+            console.log(logQueue[index].MAC +" na index "+index+" je ted "+ logQueueAmmount[index]);
+            logQueue[index].Timestamp += msgObj.Timestamp;
+            logQueue[index].ESP_temp += msgObj.ESP_temp;
             logQueue[index].Senzor_A += msgObj.Senzor_A;
             logQueue[index].Senzor_B += msgObj.Senzor_B;
+
+            //update live
+            const updateDevice = async () => {
+                console.log("update called");
+                try {
+                  const query = `
+                    UPDATE devices
+                    SET angle = ?, sens_top = ?, sens_bottom = ?, temperature = ?, time = ?
+                    WHERE mac = ?
+                  `;
+              
+                  const [result] = await db.promise().execute(query, [msgObj.Angle, msgObj.Senzor_A, msgObj.Senzor_B, msgObj.ESP_temp, msgObj.Timestamp, msgObj.MAC]);
+              
+                  if (result.affectedRows > 0) {
+                    console.log('Device updated successfully.');
+                  } else {
+                    console.log('Device not found or no changes made.' + msgObj.MAC);
+                  }
+                } catch (error) {
+                  console.error('Failed to update device:', error);
+                }
+            };
+            console.log("calling update");
+            updateDevice();
         }
+        index = 0;
     }
 });
 function addLogs()
@@ -90,78 +131,24 @@ function addLogs()
             const sensorBottom = msgObj.Senzor_B / ammount;
             const angle = msgObj.Angle;
             const temperature = msgObj.ESP_temp / ammount;
-            console.log(timestamp+" "+sensorTop+" "+sensorBottom+" "+temperature);
+            
 
             // Save the log to the database
             const query = "INSERT INTO data (time, mac, sens_top, sens_bottom, temperature) VALUES (?, ?, ?, ?, ?)";
             db.query(query, [timestamp, device, sensorTop, sensorBottom, temperature], (err, result) => {
                 if (err) {
                     console.log('Log could not be saved in the database');
-                } else {
-                    //add new device
-                    console.log('Log saved to the database');
-                    try {
-                        // Save the device to the database
-                        const query = "INSERT INTO devices (mac, angle) VALUES (?, ?)";
-                        db.query(query, [device, angle], (err, result) => {
-                            if (err) {
-                            console.log('Device could not be saved in the database');
-                            } else {
-                                console.log('Device saved to the database');
-                            }
-                        });
-                    } catch (error) {
-                        console.log('Error parsing JSON message:', error.message);
-                    }
                 }
             });
         } catch (error) {
         console.log('Error parsing JSON message:', error.message);
     }
-    })
     index++;
+    })
+    
 }
+logQueue = [];
+logQueueAmmount = [];
 client.on('error', (error) => {
     console.error('An error occurred:', error.message);
 });
-
-client.publish('B8:D6:1A:47:D7:A7/data', JSON.stringify({
-    MAC: 'hovno',
-    Timestamp: 100,
-    Senzor_A: 100,
-    Senzor_B: 100,
-    Angle: 10.00,
-    ESP_temp: 10.00,
-}));
-client.publish('B8:D6:1A:47:D7:A7/data', JSON.stringify({
-    MAC: 'ligma',
-    Timestamp: 500,
-    Senzor_A: 500,
-    Senzor_B: 500,
-    Angle: 50.00,
-    ESP_temp: 50.00,
-}));
-client.publish('B8:D6:1A:47:D7:A7/data', JSON.stringify({
-    MAC: 'hovno',
-    Timestamp: 200,
-    Senzor_A: 200,
-    Senzor_B: 200,
-    Angle: 20.00,
-    ESP_temp: 20.00,
-}));
-client.publish('B8:D6:1A:47:D7:A7/data', JSON.stringify({
-    MAC: 'ligma',
-    Timestamp: 400,
-    Senzor_A: 400,
-    Senzor_B: 400,
-    Angle: 40.00,
-    ESP_temp: 40.00,
-}));
-client.publish('B8:D6:1A:47:D7:A7/data', JSON.stringify({
-    MAC: 'hovno',
-    Timestamp: 200,
-    Senzor_A: 200,
-    Senzor_B: 200,
-    Angle: 20.00,
-    ESP_temp: 20.00,
-}));

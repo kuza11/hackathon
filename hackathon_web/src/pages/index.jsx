@@ -20,7 +20,7 @@ export default function Home({ stats, setStats }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setStats(await sendLocation(location));
+    //setStats(await sendLocation(location));
     setShowGraph(true);
   }
 

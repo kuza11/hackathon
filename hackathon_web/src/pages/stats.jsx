@@ -10,6 +10,8 @@ import {
 } from "recharts";
 import stats from "../../data.json";
 import { useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Stats(/*{ stats }*/) {
   let router = useRouter();
@@ -29,7 +31,7 @@ export default function Stats(/*{ stats }*/) {
 
   useEffect(() => {
     if (graph_stats.at(-1).eff <= treshold) {
-      alert("Clean your panels!");
+      toast.warn("Clean your panels!");
     }
   }, [treshold, graph_stats.last]);
 
@@ -45,6 +47,18 @@ export default function Stats(/*{ stats }*/) {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24 text-2xl">
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <h1>Effectivity of panels over time</h1>
       <ResponsiveContainer height={300}>
         <LineChart data={graph_stats}>

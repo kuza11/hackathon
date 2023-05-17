@@ -114,7 +114,7 @@ void setup_sensors() {
     }
   }
 
-  if (!bh1750_b.begin(BH1750::CONTINUOUS_HIGH_RES_MODE, 0x5C, &Wire1)) {
+  if (!bh1750_b.begin(BH1750::CONTINUOUS_HIGH_RES_MODE, 0x23, &Wire1)) {
     Serial.println("Failed to find luxmetr B chip");
     while (1) {
       delay(10);

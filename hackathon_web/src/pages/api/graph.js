@@ -2,6 +2,7 @@
 const mysql = require("mysql2/promise");
 const config = require("../../../config.json");
 const fs = require("fs");
+const regression = require("regression");
 
 
 export default async function handler(req, res) {
@@ -41,19 +42,25 @@ export default async function handler(req, res) {
   let lastDayRecs = await qry("SELECT * FROM data WHERE time > ?;",[Math.floor(Date.now()/1000)-(24*3600)])[0];
   let lossday = 0;
   lastDayRecs.forEach((e) => {
-    lossday += (e.power / (parseFloat(e.sens_top) + parseFloat(e.sens_bottom)) / 2) * coeff - maxPow;
+    lossday += (e.power / ((parseFloat(e.sens_top) + parseFloat(e.sens_bottom)) / 2) * coeff) - maxPow;
   });
 
   let lastCleanedRecs = await qry("SELECT * FROM data WHERE time > (SELECT cleaning FROM users);")[0];
   let lossCleaned = 0;
   lastCleanedRecs.forEach((e) => {
-    lossCleaned += (e.power / (parseFloat(e.sens_top) + parseFloat(e.sens_bottom)) / 2) * coeff - maxPow;
+    lossCleaned += (e.power / ((parseFloat(e.sens_top) + parseFloat(e.sens_bottom)) / 2) * coeff) - maxPow;
   });
 
   let loss = 0;
   data[0].forEach((e) => {
-    loss += (e.power / (parseFloat(e.sens_top) + parseFloat(e.sens_bottom)) / 2) * coeff - maxPow;
+    loss += (e.power / ((parseFloat(e.sens_top) + parseFloat(e.sens_bottom)) / 2) * coeff) - maxPow;
   });
+
+
+  let lastYear = (await qry("SELECT * FROM data WHERE time > ?;",[Math.floor(Date.now()/1000)-(365*24*3600)]))[0];
+  let tempArr = await lastYear.map((e) => {return [(e.power / (parseFloat(e.sens_top) + parseFloat(e.sens_bottom)) / 2) * coeff, e.temperature]});
+
+  var regressionLine = regression('linear', tempArr);
 
   res.status(200).json({
     message: {
@@ -71,7 +78,7 @@ export default async function handler(req, res) {
         moneyloss_last: lossCleaned,
         moneyloss_all: loss
       },
-
+      temp_line: regressionLine
     },
   });
 

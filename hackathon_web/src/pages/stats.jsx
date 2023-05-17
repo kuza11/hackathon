@@ -28,7 +28,7 @@ export default function Stats(/*{ stats }*/) {
   const power_to_temp = stats.message.power_to_temp;
 
   useEffect(() => {
-    if (graph_stats.last <= treshold) {
+    if (graph_stats.at(-1).eff <= treshold) {
       alert("Clean your panels!");
     }
   }, [treshold, graph_stats.last]);

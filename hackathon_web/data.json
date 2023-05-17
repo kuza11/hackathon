@@ -51,7 +51,7 @@
                 { "time": 46, "eff": 61 },
                 { "time": 47, "eff": 60 }
             ],
-            "treshold": 50
+            "treshold": 60
         },
         "stats": {
             "moneyloss_all": 10000,

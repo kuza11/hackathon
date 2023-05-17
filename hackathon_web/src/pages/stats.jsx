@@ -9,13 +9,29 @@ import {
   Tooltip,
 } from "recharts";
 import stats from "../../data.json";
+import { useEffect } from "react";
 
 export default function Stats(/*{ stats }*/) {
   let router = useRouter();
 
-  const graph_stats = stats.message.eff_graph;
-  const money_lost = stats.message.stats;
+  let graph_stats = stats.message.eff_graph.graph;
+  const treshold = stats.message.eff_graph.treshold;
+  graph_stats = graph_stats.map((e) => {
+    return {
+      time: e.time,
+      eff: e.eff,
+      treshold,
+    };
+  });
+  const power_graph = stats.message.power_graph;
+  const moneyloss = stats.message.stats;
   const power_to_temp = stats.message.power_to_temp;
+
+  useEffect(() => {
+    if (graph_stats.last <= treshold) {
+      alert("Clean your panels!");
+    }
+  }, [treshold, graph_stats.last]);
 
   function cleaned() {
     fetch("/api/cleaning", {
@@ -30,11 +46,39 @@ export default function Stats(/*{ stats }*/) {
   return (
     <main className="flex min-h-screen flex-col items-center p-24 text-2xl">
       <h1>Effectivity of panels over time</h1>
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer height={300}>
         <LineChart data={graph_stats}>
           <XAxis dataKey="time" />
           <YAxis />
-          <Line type="monotone" dataKey="eff" stroke="#ff0000" />
+          <Line
+            strokeWidth={5}
+            type="monotone"
+            dataKey="eff"
+            stroke="#ff0000"
+            dot={false}
+          />
+          <Line
+            type="monotone"
+            dataKey="treshold"
+            strike="#80e64d"
+            dot={false}
+          />
+          <Tooltip />
+        </LineChart>
+      </ResponsiveContainer>
+
+      <h1 className="mt-8">Power graph</h1>
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={power_graph}>
+          <XAxis dataKey="time" />
+          <YAxis />
+          <Line
+            strokeWidth={5}
+            type="monotone"
+            dataKey="power"
+            stroke="#ff0000"
+            dot={false}
+          />
           <Tooltip />
         </LineChart>
       </ResponsiveContainer>
@@ -44,7 +88,13 @@ export default function Stats(/*{ stats }*/) {
         <LineChart data={power_to_temp}>
           <XAxis dataKey="temp" />
           <YAxis domain={[90, 100]} />
-          <Line type="monotone" dataKey="power" stroke="#ff0000" />
+          <Line
+            strokeWidth={5}
+            type="monotone"
+            dataKey="power"
+            stroke="#ff0000"
+            dot={false}
+          />
           <Tooltip />
         </LineChart>
       </ResponsiveContainer>
@@ -52,17 +102,17 @@ export default function Stats(/*{ stats }*/) {
       <div className="grid grid-cols-2 gap-2 mt-8">
         <Panel
           name="Money lost total"
-          value={money_lost.money_lost}
+          value={moneyloss.moneyloss_all}
           unit="Kč"
         />
         <Panel
           name="Money lost today"
-          value={money_lost.money_lost_today}
+          value={moneyloss.moneyloss_day}
           unit="Kč"
         />
         <Panel
           name="Money lost from last cleaning"
-          value={money_lost.money_lost_last_clean}
+          value={moneyloss.moneyloss_last}
           unit="Kč"
         />
       </div>
@@ -91,7 +141,7 @@ function Panel({ name, value, unit }) {
 
 function Graph({ name, unit1, unit2, stats, height, setNumPanels }) {
   const router = useRouter();
-  const threshhold = 0.25;
+  const threshold = 0.25;
 
   let max = stats.reduce((maxTime, current) => {
     return current.time > maxTime ? current.time : maxTime;
@@ -116,7 +166,7 @@ function Graph({ name, unit1, unit2, stats, height, setNumPanels }) {
             return (
               <Node
                 key={e.number}
-                color={time > height * (1 - threshhold) ? "green" : "red"}
+                color={time > height * (1 - threshold) ? "green" : "red"}
                 height={time}
                 onClick={() => {
                   setNumPanels(e.number);
